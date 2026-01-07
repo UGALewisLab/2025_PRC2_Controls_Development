@@ -74,14 +74,14 @@ if [ ! -f $read1 ]; then
 #trim reads
   echo "${line} running as unpaired file only"
 
-  module load Trim_Galore/0.6.7-GCCcore-11.2.0
+  module load Trim_Galore/0.6.10-GCCcore-12.3.0
 
   trim_galore --illumina --fastqc --length 25 --basename ${accession} --gzip -o $trimmed $unpaired
 
   wait
 
 #map with STAR
-  module load STAR/2.7.10b-GCC-11.3.0
+  module load STAR/2.7.11b-GCC-13.3.0
 
   STAR --runMode alignReads \
   --runThreadN $THREADS \
@@ -96,11 +96,12 @@ if [ ! -f $read1 ]; then
   --outSAMattributes Standard \
   --limitBAMsortRAM 20455724800
   #create index
-  module load SAMtools/1.16.1-GCC-11.3.0
+  module load SAMtools/1.21-GCC-13.3.0
   samtools index "${bam}Aligned.sortedByCoord.out.bam"
 
   ##quantify with featureCounts
-  module load Subread/2.0.6-GCC-11.3.0
+  module load Subread/2.0.6-GCC-12.3.0
+
 
   featureCounts -T $THREADS \
   -t CDS \
@@ -116,7 +117,7 @@ if [ ! -f $read1 ]; then
 
 
   ##Plot reads to visualize tracks if needed
-       module load deepTools/3.5.2-foss-2022a
+       module load deepTools/3.5.5-gfbf-2023a
        #Plot all reads
        bamCoverage -p $THREADS -bs 50 --normalizeUsing BPM -of bigwig -b "${bam}Aligned.sortedByCoord.out.bam" -o "${bw}"
 
@@ -130,7 +131,7 @@ elif [ -f $read2 ]; then
   ##################
   #Trimming
   #################
-  	  module load Trim_Galore/0.6.7-GCCcore-11.2.0
+  	  module load Trim_Galore/0.6.10-GCCcore-12.3.0
 
   	  trim_galore --illumina --fastqc --paired --length 25 --basename ${accession} --gzip -o $trimmed $read1 $read2
   	  wait
@@ -138,7 +139,7 @@ elif [ -f $read2 ]; then
 
   ##map with STAR
 
-  	  module load STAR/2.7.10b-GCC-11.3.0
+  	  module load STAR/2.7.11b-GCC-13.3.0
   	    STAR --runMode alignReads \
   	    --runThreadN $THREADS \
   	    --genomeDir /home/zlewis/Genomes/Neurospora/Nc12_RefSeq/STAR \
@@ -154,11 +155,11 @@ elif [ -f $read2 ]; then
 
 
         #create index
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/1.21-GCC-13.3.0
         samtools index "${bam}Aligned.sortedByCoord.out.bam"
 
         ##quantify with featureCounts
-        module load Subread/2.0.6-GCC-11.3.0
+        module load Subread/2.0.6-GCC-12.3.0
 
         featureCounts -T $THREADS \
         -t CDS \
@@ -172,7 +173,7 @@ elif [ -f $read2 ]; then
 
 
         ##Plot reads to visualize tracks if needed
-             module load deepTools/3.5.2-foss-2022a
+             module load deepTools/3.5.5-gfbf-2023a
              #Plot all reads
              bamCoverage -p $THREADS -bs 50 --normalizeUsing BPM -of bigwig -b "${bam}Aligned.sortedByCoord.out.bam" -o "${bw}"
 
@@ -185,7 +186,7 @@ else
        trim_galore --illumina --fastqc --length 25 --basename ${accession} --gzip -o $trimmed $read1
 
        #map with STAR
-       module load STAR/2.7.10b-GCC-11.3.0
+       module load STAR/2.7.11b-GCC-13.3.0
 
          STAR --runMode alignReads \
          --runThreadN $THREADS \
@@ -204,11 +205,11 @@ else
 
 
          #create index
-         module load SAMtools/1.16.1-GCC-11.3.0
+         module load SAMtools/1.21-GCC-13.3.0
          samtools index "${bam}Aligned.sortedByCoord.out.bam"
 
          ##quantify with featureCounts
-         module load Subread/2.0.6-GCC-11.3.0
+         module load Subread/2.0.6-GCC-12.3.0
 
          featureCounts -T $THREADS \
          -t CDS \
@@ -221,7 +222,7 @@ else
 
 
          ##Plot reads to visualize tracks if needed
-         	    module load deepTools/3.5.2-foss-2022a
+         	    module load deepTools/3.5.5-gfbf-2023a
          	    #Plot all reads
          	    bamCoverage -p $THREADS -bs 50 --normalizeUsing BPM -of bigwig -b "${bam}Aligned.sortedByCoord.out.bam" -o "${bw}"
 
