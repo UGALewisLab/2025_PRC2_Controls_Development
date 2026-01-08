@@ -36,29 +36,30 @@ THREADS=2
 
 ###################################
 #input file variables
-  read1=${fastqPath}/${accession}/${accession}_1.fastq.gz
-  read2=${fastqPath}/${accession}/${accession}_2.fastq.gz
-  unpaired=${fastqPath}/${accession}/${accession}.fastq.gz
+  read1=${fastqPath}/${accession}_R1_001.fastq.gz
+  read2=${fastqPath}/${accession}_R2_001.fastq.gz
+  unpaired=${fastqPath}/${accession}.fastq.gz
 
 #make output file folders
-trimmed="${outdir}/TrimmedFastQs/${accession}"
+name=$(echo "$accession" | sed -E 's/_S[0-9]{1}_L[0-9]{3}//')
+trimmed="${outdir}/TrimmedFastQs/${name}"
 mkdir $trimmed
 
-bamdir="${outdir}/bamFiles/${accession}"
+bamdir="${outdir}/bamFiles/${name}"
 mkdir "${bamdir}"
 
-countsdir="${outdir}/counts/${accession}"
+countsdir="${outdir}/counts/${name}"
 mkdir "${countsdir}"
 
-bwDir="${outdir}/bigWig/${accession}"
+bwDir="${outdir}/bigWig/${name}"
 mkdir "${bwDir}"
 
 mkdir ${outdir}/condensed
 
 #make variables for output file names
-bam="${bamdir}/${accession}_"
-counts="${countsdir}/${accession}_counts.txt"
-bw="${bwDir}/${accession}.bw"
+bam="${bamdir}/${name}_"
+counts="${countsdir}/${name}_counts.txt"
+bw="${bwDir}/${name}.bw"
 
 ############# Read Trimming ##############
 #remove adaptors, trim low quality reads (default = phred 20), length > 25
@@ -76,7 +77,7 @@ if [ ! -f $read1 ]; then
 
   module load Trim_Galore/0.6.10-GCCcore-12.3.0
 
-  trim_galore --illumina --fastqc --length 25 --basename ${accession} --gzip -o $trimmed $unpaired
+  trim_galore --illumina --fastqc --length 25 --basename ${name} --gzip -o $trimmed $unpaired
 
   wait
 
@@ -87,7 +88,7 @@ if [ ! -f $read1 ]; then
   --runThreadN $THREADS \
   --genomeDir /home/zlewis/Genomes/Neurospora/Nc12_RefSeq/STAR \
   --outFileNamePrefix ${bam} \
-  --readFilesIn $trimmed/${accession}_trimmed.fq.gz \
+  --readFilesIn $trimmed/${name}_trimmed.fq.gz \
   --readFilesCommand zcat \
   --alignIntronMax 10000 \
   --outSAMtype BAM SortedByCoordinate \
@@ -133,7 +134,7 @@ elif [ -f $read2 ]; then
   #################
   	  module load Trim_Galore/0.6.10-GCCcore-12.3.0
 
-  	  trim_galore --illumina --fastqc --paired --length 25 --basename ${accession} --gzip -o $trimmed $read1 $read2
+  	  trim_galore --illumina --fastqc --paired --length 25 --basename ${name} --gzip -o $trimmed $read1 $read2
   	  wait
 
 
@@ -144,7 +145,7 @@ elif [ -f $read2 ]; then
   	    --runThreadN $THREADS \
   	    --genomeDir /home/zlewis/Genomes/Neurospora/Nc12_RefSeq/STAR \
   	    --outFileNamePrefix ${bam} \
-  	    --readFilesIn $trimmed/${accession}_val_1.fq.gz $trimmed/${accession}_val_2.fq.gz \
+  	    --readFilesIn $trimmed/${name}_val_1.fq.gz $trimmed/${name}_val_2.fq.gz \
   	    --readFilesCommand zcat \
         --alignIntronMax 10000 \
   	    --outSAMtype BAM SortedByCoordinate \
@@ -183,7 +184,7 @@ else
 
     echo "${accesion} running as Read1 file only"
 
-       trim_galore --illumina --fastqc --length 25 --basename ${accession} --gzip -o $trimmed $read1
+       trim_galore --illumina --fastqc --length 25 --basename ${name} --gzip -o $trimmed $read1
 
        #map with STAR
        module load STAR/2.7.11b-GCC-13.3.0
@@ -191,8 +192,8 @@ else
          STAR --runMode alignReads \
          --runThreadN $THREADS \
          --genomeDir /home/zlewis/Genomes/Neurospora/Nc12_RefSeq/STAR \
-         --outFileNamePrefix ${accession} \
-         --readFilesIn ${accession}_1_trimmed.fq.gz  \
+         --outFileNamePrefix ${name} \
+         --readFilesIn ${name}_1_trimmed.fq.gz  \
          --readFilesCommand zcat \
          --alignIntronMax 10000 \
          --outSAMtype BAM SortedByCoordinate \
