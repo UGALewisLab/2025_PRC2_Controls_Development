@@ -35,4 +35,4 @@ while read -r line
 	do
 	sleep 10
 	echo "$line mapping job submitted"
-	sbatch --export=ALL,accession="${line}",fastqPath="${fastqPath}",outdir="${outdir}" Script1a_MapRNAseq.sh & done <"$1"
+	sbatch --export=ALL,accession="${line}",fastqPath="${fastqPath}",outdir="${outdir}" Script1b_mapRNAseq.sh & done <"$1"
